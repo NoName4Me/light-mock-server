@@ -1,3 +1,3 @@
 # light-mock-server
 
-Use Node.js generate a easy mock server. Have fun!
+A easy mock server with nodeJs and warn water. Have fun!
