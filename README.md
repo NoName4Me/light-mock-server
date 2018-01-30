@@ -1,2 +1,3 @@
 # light-mock-server
-by node.js
+
+Use Node.js generate a easy mock server. Have fun!
