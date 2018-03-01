@@ -22,6 +22,7 @@ var fn_api_delete = async (ctx, next) => {
 };
 
 module.exports = {
+    // you can add more functions for each one HTTP Method
     'GET /api': fn_api_get,
     'POST /api': fn_api_post,
     'PUT /api': fn_api_put,
