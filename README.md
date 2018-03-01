@@ -1,5 +1,5 @@
 # light-mock-server
 
-An easy mock server, nodeJs driven. Have fun!
+An easy mock server, `nodeJs`,`koa2` driven. Have fun!
 
-reference to [DEMO](./controllers/demo.js), you can add your own mock data and conditions.
+Reference to [DEMO](./controllers/demo.js), create a new `.js` file, add your own bussiness mock data.
