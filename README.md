@@ -1,10 +1,10 @@
 # light-mock-server
 
-An easy mock server, `nodeJs`, `koa` driven. Have fun~
+An easy mock server, `nodeJs`, `koa` driven. Have fun~ :metal:
 
 ## Usage
 
-1. Add your mock data `.js` files under directory `controllers`
+1. Add your mock data `.js` files under directory `controllers`
 
 Reference to this [DEMO FILE](./controllers/demo.js), create a new `.js` file, add your own bussiness mock data.
 
