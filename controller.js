@@ -1,20 +1,20 @@
 const fs = require('fs');
 
 function registerMapper(router, method, mapper) {
-		router[method](mapper.url, mapper.handler);
-		console.log(`register URL mapping: ${method.toUpperCase()} ${typeof mapper.url==='object'?'regExp:':'string:'} ${mapper.url}`);
+    router[method](mapper.url, mapper.handler);
+    console.log(`register URL mapping: ${method.toUpperCase()} ${typeof mapper.url==='object'?'regExp:':'string:'} ${mapper.url}`);
 }
 
 function addMapping(router, mapping) {
     for (var method in mapping) {
-		if(Array.isArray(mapping[method])) {
-			mapping[method].forEach(function(mapper) {
-				registerMapper(router, method, mapper);
-			});
-		} else {
-			registerMapper(router, method, mapping[method]);
-		}
-		
+        if (Array.isArray(mapping[method])) {
+            mapping[method].forEach(function(mapper) {
+                registerMapper(router, method, mapper);
+            });
+        } else {
+            registerMapper(router, method, mapping[method]);
+        }
+
     }
 }
 
@@ -32,11 +32,11 @@ function addControllers(router, dir) {
     }
 }
 
-module.exports = function (dir) {
+module.exports = function(dir) {
     let
         controllers_dir = dir || 'controllers',
         router = require('koa-router')();
-        
+
     addControllers(router, controllers_dir);
     return router.routes();
 };
