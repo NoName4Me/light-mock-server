@@ -8,6 +8,13 @@ An easy mock server, `nodeJs`, `koa` driven. Have fun~ :metal:
 
 Reference to this [DEMO FILE](./controllers/demo.js), create a new `.js` file, add your own bussiness mock data.
 
+Support full `string` mapping, `regExp` mapping, and multi-mapping in one methond, like this:
+
+```js
+'get': [{url: '/api', handler: fn_api_get1},{url: /some\/regexp/, handler: fn_api_get2},{url: '/api/jonge', handler: fn_api_get3}], 
+'post': //...
+```
+
 2. Install dependencies and start the server
 
 ```bash
