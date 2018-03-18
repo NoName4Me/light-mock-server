@@ -8,7 +8,7 @@ function registerMapper(router, method, mapper) {
 function addMapping(router, mapping) {
     for (var method in mapping) {
         if (Array.isArray(mapping[method])) {
-            mapping[method].forEach(function(mapper) {
+            mapping[method].forEach(function (mapper) {
                 registerMapper(router, method, mapper);
             });
         } else {
@@ -32,11 +32,17 @@ function addControllers(router, dir) {
     }
 }
 
-module.exports = function(dir) {
+module.exports = function (dir) {
     let
         controllers_dir = dir || 'controllers',
         router = require('koa-router')();
 
+    // defualt page to add mock data
+    router.get('/', async (ctx, next) => {
+        ctx.response.type = 'text/html';
+        ctx.response.body = fs.readFileSync('./entrence.html');
+    });
+    
     addControllers(router, controllers_dir);
     return router.routes();
 };

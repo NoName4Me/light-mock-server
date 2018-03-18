@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>light mock server~</title>
+    <style>
+        .mr20 {
+            margin-right: 20px;
+        }
+
+        .mt15 {
+            margin-top: 15px;
+        }
+
+        .card {
+            position: relative;
+            padding: 20px;
+            margin: 20px;
+            box-shadow: 0 0 8px rgba(0, 0, 0, .4);
+            max-width: 640px;
+            border: 1px solid #ccc;
+        }
+
+        .card:hover {
+            box-shadow: 0 0 16px 2px rgba(0, 0, 0, .4);
+        }
+
+        .head {
+            border-bottom: 1px solid #ccc;
+            height: 30px;
+            line-height: 30px;
+        }
+
+        .card label {
+            display: inline-block;
+            width: 100px;
+            vertical-align: top;
+        }
+
+        .card.error {
+            box-shadow: 0 0 16px 2px rgb(255, 0, 0);
+        }
+
+        .error-msg {
+            color: red;
+            font-size: 12px;
+        }
+
+        .fr {
+            float: right;
+        }
+
+        .fl {
+            float: left;
+        }
+
+        .btn,
+        .icon-btn {
+            border: none;
+            outline: none;
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            line-height: 16px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .btn {
+            background-color: #39fa;
+            color: #fff;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background-color: #39f;
+            box-shadow: 0 0 6px rgba(0, 0, 0, .2);
+        }
+
+        .icon-btn {
+            border: 1px solid #ccc;
+        }
+
+        .icon-btn:hover {
+            background-color: #fff;
+            box-shadow: 0 0 6px rgba(0, 0, 0, .2);
+        }
+
+        .btns {
+            position: absolute;
+            right: 10px;
+            bottom: 20px;
+            width: 50px;
+            display: none;
+        }
+
+        .card:hover .btns {
+            display: flex;
+            flex-direction: column;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app" v-cloak>
+        <div>
+            <label for="file-name" class="mr20">文件名称</label>
+            <input id="file-name" type="text" placeholder="mock文件名（默认.js）" v-model="fileName">
+        </div>
+        <hr>
+        <h3>映射配置
+            <button class="btn" v-on:click="addMapper">+</button>
+        </h3>
+        <div v-for="(mapper,idx) in mappers" class="card" v-bind:class="{error:mapper.isInvalid}">
+            <div class="head">
+                <span v-if="mapper.isInvalid" v-cloak class="fl error-msg">{{mapper.errorMsg.join('、')+'。'}}</span>
+                <button class="fr icon-btn" @click="">V</button>
+            </div>
+            <div class="btns">
+                <button class="btn" v-on:click="addMapper(idx)">+</button>
+                <button v-on:click="removeMapper(idx)" class="btn">-</button>
+            </div>
+            <div class="mt15">
+                <label for="url-reg" class="mr20">HTTP Method</label>
+                <select v-model="mapper.method">
+                    <option selected value="get">GET</option>
+                    <option value="post">POST</option>
+                    <option value="put">PUT</option>
+                    <option value="delete">DELETE</option>
+                </select>
+            </div>
+            <div class="mt15">
+                <label for="url-reg" class="mr20">url</label>
+                <input id="url-reg" type="text" placeholder="string或正则" v-model="mapper.urlReg">
+            </div>
+            <div class="mt15">
+                <label for="func-name" class="mr20">方法名</label>
+                <input type="text" placeholder="字母开头，可包含字母$_和数字" v-model="mapper.fnName">
+            </div>
+            <div class="mt15">
+                <label for="mock-data" class="mr20">mock数据</label>
+                <textarea type="text" placeholder="mock数据（JSON）" v-model="mapper.mockData"></textarea>
+            </div>
+        </div>
+        <div>
+            <button v-on:click="createMock">生成mock文件</button>
+            <button v-on:click="startServer">启动mock server</button>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/vue"></script>
+    <script>
+        function checkForm(mappers) {
+            mappers.forEach((mapper) => {
+                mapper.isInvalid = false;
+                mapper.errorMsg = [];
+                try {
+                    JSON.parse(mapper.mockData);
+                } catch (e) {
+                    mapper.isInvalid = true;
+                    mapper.errorMsg.push("mock数据不是JSON格式");
+                }
+                if (!mapper.fnName || !mapper.fnName.trim() || !/^[a-zA-Z$]+[a-zA-Z$_0-9]*/.test(mapper.fnName.trim())) {
+                    mapper.errorMsg.push("方法名不合法");
+                }
+                if (!mapper.urlReg || !mapper.urlReg.trim()) {
+                    mapper.errorMsg.push("url不能为空");
+                }
+            });
+            return mappers.filter((mapper) => {
+                return mapper.isInvalid
+            }).length < 1;
+        }
+        new Vue({
+            el: '#app',
+            created() {
+                // This code will run on startup
+            },
+            data: {
+                fileName: '',
+                mappers: [{
+                    method: 'get',
+                    isInvalid: false,
+                    errorMsg: [],
+                }]
+            },
+            methods: {
+                addMapper(idx) {
+                    if (idx === undefined) {
+                        idx = this.mappers.length;
+                    }
+                    this.mappers.splice(idx + 1, 0, {
+                        method: 'get',
+                        isInvalid: true,
+                        errorMsg: []
+                    });
+                },
+                removeMapper(idx) {
+                    this.mappers.splice(idx, 1);
+                },
+                createMock() {
+                    if (checkForm(this.mappers)) {
+                        // write to file
+                        console.dir(this.mappers);
+                    }
+
+                },
+                startServer() {
+
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
