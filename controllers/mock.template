@@ -1,0 +1,21 @@
+// generated on {{dateTime}}
+
+{% for method, list in mappers %}
+// {{ method }}
+{% for item in list -%}
+var {{ item.fn }} = async (ctx, next) => {
+    // get request params from: ctx.request.body / ctx.request.params
+    ctx.response.body = {{ item.mock | dump | safe }};
+};
+{%- endfor %}
+{% endfor %}
+
+module.exports = {
+    {%- for method, list in mappers %}
+    '{{ method }}': [
+    {%- for item in list %}
+        {url: '{{item.url}}', handler: {{item.fn}}}{% if loop.index !== loop.length %},{% endif %}
+    {%- endfor %}
+    ]{% if loop.index !== loop.length %},{% endif %}
+    {%- endfor %}
+};

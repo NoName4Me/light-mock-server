@@ -20,8 +20,10 @@
             padding: 20px;
             margin: 20px;
             box-shadow: 0 0 8px rgba(0, 0, 0, .4);
-            max-width: 640px;
+            max-width: 600px;
+            min-width: 400px;
             border: 1px solid #ccc;
+            max-height: 400px;
         }
 
         .card:hover {
@@ -102,6 +104,28 @@
             display: flex;
             flex-direction: column;
         }
+
+        .card textarea {
+            width: 200px;
+            height: 160px;
+            min-width: 120px;
+            min-height: 80px;
+            max-width: 260px;
+            max-height: 220px;
+        }
+
+        .card.collapse {
+            width: 10px;
+        }
+
+        .card.collapse .btns {
+            width: 100px;
+            right: 60px;
+        }
+
+        .card.collapse:hover .btns {
+            flex-direction: row;
+        }
     </style>
 </head>
 
@@ -142,7 +166,9 @@
                 <input type="text" placeholder="字母开头，可包含字母$_和数字" v-model="mapper.fnName">
             </div>
             <div class="mt15">
-                <label for="mock-data" class="mr20">mock数据</label>
+                <label for="mock-data" class="mr20">mock数据
+                    <button v-on:click="formatJson(idx)">格式化</button>
+                </label>
                 <textarea type="text" placeholder="mock数据（JSON）" v-model="mapper.mockData"></textarea>
             </div>
         </div>
@@ -153,6 +179,7 @@
     </div>
 
     <script src="https://unpkg.com/vue"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <script>
         function checkForm(mappers) {
             mappers.forEach((mapper) => {
@@ -206,11 +233,31 @@
                     if (checkForm(this.mappers)) {
                         // write to file
                         console.dir(this.mappers);
+                        axios.post('/', {
+                                fileName: this.fileName,
+                                mappers: this.mappers
+                            })
+                            .then(function (response) {
+                                if(response && response.data) {
+                                    alert('成功!\n'+ response.data.msg);
+                                }
+                            })
+                            .catch(function (error) {
+                                if(error.response && error.response.data) {
+                                    alert('失败!\n'+error.response.data.msg);
+                                }
+                            });
                     }
 
                 },
                 startServer() {
 
+                },
+                formatJson(idx) {
+                    if (this.mappers[idx].mockData) {
+                        this.mappers[idx].mockData = JSON.stringify(JSON.parse(this.mappers[idx].mockData),
+                            undefined, 2);
+                    }
                 }
             }
         });

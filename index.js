@@ -7,7 +7,6 @@ const bodyParser = require('koa-bodyparser');
 // load controller tool
 const controller = require('./controller');
 
-let routerMapper = {};
 
 app.use(bodyParser());
 
