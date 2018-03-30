@@ -1,7 +1,6 @@
 const Koa = require('koa');
 const Router = require('koa-router');
 const app = new Koa();
-const router = new Router();
 const bodyParser = require('koa-bodyparser');
 
 // load controller tool

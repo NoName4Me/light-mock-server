@@ -88,7 +88,29 @@ module.exports = function (dir) {
         controllers_dir = dir || 'controllers',
         router = require('koa-router')();
 
-    // defualt page to add mock data
+    // watch file changes
+    const watch = project => {
+        try { // 
+            fs.watch(project, { recursive: true }, cacheClean)
+        } catch(e) {
+            console.error('watch file error');
+        }
+    }
+    // clean require cache and re-add ctrls
+    const cacheClean = () => {
+        Object.keys(require.cache).forEach(function (id) {
+            if (/\/controllers\//.test(id)) {
+                console.log(id);
+                delete require.cache[id]
+            }
+        });
+        addControllers(router, controllers_dir);
+    }
+
+    // start watching
+    watch('./controllers');
+
+    // default page to add mock data
     router.get('/', async (ctx, next) => {
         ctx.response.type = 'text/html';
         ctx.response.body = fs.readFileSync('./entrence.html');
